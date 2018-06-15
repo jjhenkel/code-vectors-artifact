@@ -1,0 +1,9 @@
+[submodule "c2ocaml"]
+	path = c2ocaml
+	url = https://github.com/jjhenkel/c2ocaml
+[submodule "lsee"]
+	path = lsee
+	url = https://github.com/jjhenkel/lsee
+[submodule "glove"]
+	path = glove
+	url = https://github.com/stanfordnlp/glove
