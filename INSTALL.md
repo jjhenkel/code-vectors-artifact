@@ -14,9 +14,9 @@ Given these prerequisites installing this artifact should be easy. To install fo
 
 1. git clone https://github.com/jjhenkel/code-vectors-artifact
 2. cd ./code-vectors-artifact
-3. make end-to-end-test-hexchat
+3. make end-to-end-hexchat
 
-### What `make end-to-end-test-hexchat` is doing
+### What `make end-to-end-hexchat` is doing
 
 If you were able to run the above three command successfully you have done the following:
 
