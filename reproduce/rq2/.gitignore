@@ -1,2 +1,2 @@
-vectors/
+vectors/*
 !vectors/README.md
