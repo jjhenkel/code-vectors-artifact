@@ -26,12 +26,13 @@ MAKE:=${ROOT_DIR}/tools/make
 .PHONY: submodules
 .PHONY: c2ocaml
 .PHONY: lsee
+.PHONY: glove
+.PHONY: learn-vectors-redis
 .PHONY: end-to-end-redis
 .PHONY: end-to-end-nginx
 .PHONY: end-to-end-hexchat
 .PHONY: end-to-end-nmap
 .PHONY: end-to-end-curl
-.PHONY: end-to-end-linux
 
 .DEFAULT_GOAL := help
 
@@ -55,6 +56,22 @@ lsee: submodules ## Ensures that the lsee is cloned and setup.
 	@echo "[code-vectors] Ensuring we have lsee"
 	docker pull jjhenkel/lsee
 
+learn-vectors-redis: glove ## Learn GloVe vectors from redis trace corpus.
+	@echo "[code-vectors] Learning vectors for traces generated from redis..."
+	docker run -it --rm \
+	  -v ${ROOT_DIR}/lsee:/traces \
+		-v ${ROOT_DIR}/artifacts/redis:/output \
+		jjhenkel/glove \
+		/traces/redis.traces.txt 10 15 300 50
+	@echo "[code-vectors] Learner finished. Output saved in ${ROOT_DIR}/artifacts/redis"
+	@echo "[code-vectors] Running demo using fresh vectors..."
+	docker run -it --rm \
+		-v ${ROOT_DIR}/artifacts:/artifacts \
+		--entrypoint python \
+		jjhenkel/glove \
+		/app/redis-demo.py
+	@echo "[code-vectors] Demo complete."
+
 end-to-end-redis: lsee c2ocaml ## Runs the toolchain end-to-end on redi.
 	@echo "[code-vectors] Running end-to-end pipeline on redis..."
 	@echo "[code-vectors] Transforming sources..."
@@ -77,6 +94,3 @@ end-to-end-nmap: lsee c2ocaml ## Runs the toolchain end-to-end on nmap.
 
 end-to-end-curl: lsee c2ocaml ## Runs the toolchain end-to-end on curl.
 	@echo "[code-vectors] Running end-to-end pipeline on curl..."
-
-end-to-end-linux: lsee c2ocaml ## Runs the toolchain end-to-end on linux. VERY SLOW.
-	@echo "[code-vectors] Running end-to-end pipeline on linux (WARNING: VERY SLOW)..."
