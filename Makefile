@@ -56,7 +56,7 @@ lsee: submodules ## Ensures that the lsee is cloned and setup.
 	@echo "[code-vectors] Ensuring we have lsee"
 	docker pull jjhenkel/lsee
 
-learn-vectors-redis: glove ## Learn GloVe vectors from redis trace corpus.
+learn-vectors-redis: glove ## Learns GloVe vectors from redis trace corpus and runs demo (using Gensim).
 	@echo "[code-vectors] Learning vectors for traces generated from redis..."
 	docker run -it --rm \
 	  -v ${ROOT_DIR}/lsee:/traces \
@@ -64,7 +64,7 @@ learn-vectors-redis: glove ## Learn GloVe vectors from redis trace corpus.
 		jjhenkel/glove \
 		/traces/redis.traces.txt 10 15 300 50
 	@echo "[code-vectors] Learner finished. Output saved in ${ROOT_DIR}/artifacts/redis"
-	@echo "[code-vectors] Running demo using fresh vectors..."
+	@echo "[code-vectors] Running demo using Gensim and our freshly learned vectors..."
 	docker run -it --rm \
 		-v ${ROOT_DIR}/artifacts:/artifacts \
 		--entrypoint python \
