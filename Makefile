@@ -53,14 +53,13 @@ c2ocaml: submodules ## Ensures that c2ocaml is cloned and setup.
 lsee: submodules ## Ensures that the lsee is cloned and setup.
 	@echo "[code-vectors] Ensuring we have lsee"
 	docker pull jjhenkel/lsee
-	# TODO
 
 end-to-end-redis: lsee c2ocaml ## Runs the toolchain end-to-end on redi.
 	@echo "[code-vectors] Running end-to-end pipeline on redis..."
 	@echo "[code-vectors] Transforming sources..."
-	pushd ${ROOT_DIR}/c2ocaml ; make redis ; popd
+	pushd ${ROOT_DIR}/c2ocaml ; make redis --output-sync ; popd
 	@echo "[code-vectors] Generating traces..."
-	pushd ${ROOT_DIR}/lsee ; make redis ; popd
+	pushd ${ROOT_DIR}/lsee ; make redis --output-sync ; popd
 	@echo "[code-vectors] Collecting traces..."
 	pushd ${ROOT_DIR}/lsee ; NAME=redis make collect ; popd
 	@echo "[code-vectors] Learning vectors..."
