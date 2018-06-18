@@ -677,17 +677,9 @@ def run_all(tests, K, M):
       benchmarkSize + (len(suite[2]) * len(suite[2]) - len(suite[2]))
 
   # Print a nice summary
-  # print('SUMMARY:')
-  # Again, don't divide by zero
-  if total != 0:
-    print('[reproduce-rq2]   Passed {}/{} ({:.2%})'.format(
-      passed, total, float(passed) / float(total)
-    ))
-  else:
-    print('[reproduce-rq2]   Passed {}/{} (0.00%)'.format(
-      passed, total
-    ))
-  print('[reproduce-rq2]   {}/{} out of vocabulary'.format(oov, benchmarkSize))
+  print('[reproduce-rq2] Results {}/{}/{} ({:.2%})'.format(
+    oov, passed, total, float(passed) / float(oov + total)
+  ))
 
 
 # Actual entrypoint
