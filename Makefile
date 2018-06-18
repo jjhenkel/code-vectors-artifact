@@ -20,6 +20,7 @@ endef
 export BASH_FUNC_realpath%%
 
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+MAKE:=${ROOT_DIR}/tools/make
 
 .PHONY: help
 .PHONY: submodules
@@ -57,11 +58,11 @@ lsee: submodules ## Ensures that the lsee is cloned and setup.
 end-to-end-redis: lsee c2ocaml ## Runs the toolchain end-to-end on redi.
 	@echo "[code-vectors] Running end-to-end pipeline on redis..."
 	@echo "[code-vectors] Transforming sources..."
-	pushd ${ROOT_DIR}/c2ocaml ; make redis --output-sync ; popd
+	pushd ${ROOT_DIR}/c2ocaml ; ${MAKE} redis --output-sync ; popd
 	@echo "[code-vectors] Generating traces..."
-	pushd ${ROOT_DIR}/lsee ; make redis --output-sync ; popd
+	pushd ${ROOT_DIR}/lsee ; ${MAKE} redis --output-sync ; popd
 	@echo "[code-vectors] Collecting traces..."
-	pushd ${ROOT_DIR}/lsee ; NAME=redis make collect ; popd
+	pushd ${ROOT_DIR}/lsee ; NAME=redis ${MAKE} collect ; popd
 	@echo "[code-vectors] Learning vectors..."
 	@echo "[code-vectors] Completed end-to-end run on redis!"
 
