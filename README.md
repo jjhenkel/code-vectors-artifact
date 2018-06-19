@@ -26,7 +26,7 @@ Check out [lsee](https://github.com/jjhenkel/lsee) on GitHub!
 
 ## Explore our ready-to-use docker images 
 
-Check them out [hub.docker.com](https://hub.docker.com/r/jjhenkel/)
+Check them out at [hub.docker.com](https://hub.docker.com/r/jjhenkel/)!
 
 ---
 
