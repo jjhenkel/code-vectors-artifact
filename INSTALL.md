@@ -12,10 +12,10 @@ This artifact makes heavy use of Docker and Docker Hub. As a prerequisite this a
 
 Given these prerequisites installing this artifact should be easy. To install follow these steps:
 
-1. git clone https://github.com/jjhenkel/code-vectors-artifact
-2. cd ./code-vectors-artifact
-3. make end-to-end-redis
-4. make learn-vectors-redis
+1. `git clone https://github.com/jjhenkel/code-vectors-artifact`
+2. `cd ./code-vectors-artifact`
+3. `make end-to-end-redis`
+4. `make learn-vectors-redis`
 
 ### What `make end-to-end-redis` is doing
 
