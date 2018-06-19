@@ -29,10 +29,6 @@ MAKE:=${ROOT_DIR}/tools/make
 .PHONY: glove
 .PHONY: learn-vectors-redis
 .PHONY: end-to-end-redis
-.PHONY: end-to-end-nginx
-.PHONY: end-to-end-hexchat
-.PHONY: end-to-end-nmap
-.PHONY: end-to-end-curl
 
 .DEFAULT_GOAL := help
 
@@ -55,6 +51,10 @@ c2ocaml: submodules ## Ensures that c2ocaml is cloned and setup.
 lsee: submodules ## Ensures that the lsee is cloned and setup.
 	@echo "[code-vectors] Ensuring we have lsee"
 	docker pull jjhenkel/lsee
+
+glove: ## Ensures that the GloVe tool is pulled from docker hub.
+	@echo "[code-vectors] Ensuring we have GloVe"
+	docker pull jjhenkel/glove
 
 learn-vectors-redis: glove ## Learns GloVe vectors from redis trace corpus and runs demo (using Gensim).
 	@echo "[code-vectors] Learning vectors for traces generated from redis..."
@@ -82,15 +82,3 @@ end-to-end-redis: lsee c2ocaml ## Runs the toolchain end-to-end on redi.
 	pushd ${ROOT_DIR}/lsee ; NAME=redis ${MAKE} collect ; popd
 	@echo "[code-vectors] Learning vectors..."
 	@echo "[code-vectors] Completed end-to-end run on redis!"
-
-end-to-end-nginx: lsee c2ocaml  ## Runs the toolchain end-to-end on nginx.
-	@echo "[code-vectors] Running end-to-end pipeline on nginx..."
-
-end-to-end-hexchat: lsee c2ocaml ## Runs the toolchain end-to-end on curl.
-	@echo "[code-vectors] Running end-to-end pipeline on hexchat..."
-
-end-to-end-nmap: lsee c2ocaml ## Runs the toolchain end-to-end on nmap.
-	@echo "[code-vectors] Running end-to-end pipeline on nmap..."
-
-end-to-end-curl: lsee c2ocaml ## Runs the toolchain end-to-end on curl.
-	@echo "[code-vectors] Running end-to-end pipeline on curl..."

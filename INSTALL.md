@@ -21,7 +21,7 @@ Given these prerequisites installing this artifact should be easy. To install fo
 
 NOTE: can take up to `3 hours` and `4 GB` of space. (Runtime on a 4-core desktop machine is about an hour.)
 
-If you were able to run the above three command successfully you have done the following:
+If you were able to run the first three commands (listed above) you have done the following:
 
 1. Used our `spec2image` tool to create a docker image (locally) containing the `redis` program's source files and steps to build that program from those source files.
 2. Built that program (in a container) with our custom version of GCC 7.2.0 running our `c2ocaml` plugin. 
@@ -70,10 +70,10 @@ docker run -it --rm jjhenkel/code-vectors-artifact:rq2
 
 NOTE: can take up to `1 hour` and `2 GB` of space.
 
-See [reproduce/rq1/README.md](reproduce/rq1/README.md) or just run the following:
+See [reproduce/rq3/README.md](reproduce/rq3/README.md) or just run the following:
 
 ```
-docker pull jjhenkel/code-vectors-artifact:rq1
-docker run -it --rm jjhenkel/code-vectors-artifact:rq1
+docker pull jjhenkel/code-vectors-artifact:rq3
+docker run -it --rm jjhenkel/code-vectors-artifact:rq3
 ```
 
