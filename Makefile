@@ -58,6 +58,10 @@ lsee: submodules ## Ensures that the lsee is cloned and setup.
 	@echo "[code-vectors] Ensuring we have lsee"
 	docker pull jjhenkel/lsee
 
+glove: ## Ensures that the GloVe tool is pulled from docker hub.
+	@echo "[code-vectors] Ensuring we have GloVe"
+	docker pull jjhenkel/glove
+
 learn-vectors-redis: glove ## Learns GloVe vectors from redis trace corpus and runs demo (using Gensim).
 	@echo "[code-vectors] Learning vectors for traces generated from redis..."
 	docker run -it --rm \
