@@ -1,8 +1,10 @@
 results = []
+didx = -1
 
 with open('/app/good.traces.txt', 'r') as file1:
     with open('/app/bad.traces.txt', 'r') as file2:
         for line1, line2 in zip(file1, file2):
+            didx += 1
             # If these traces are the same that's great, ignore them
             if line1 == line2:
                 continue
@@ -11,11 +13,26 @@ with open('/app/good.traces.txt', 'r') as file1:
             toks1 = line1.split(' ')
             toks2 = line2.split(' ')
 
+            # Basic requirments must hold
+            assert len(toks1) > 0 and len(toks2) > 0
+            assert toks1[0] == toks2[0]
+
+            # Get the function we're targeting
+            target = toks1[0]
+
             # Get the set of changed tokens
             change = set(toks1) - set(toks2) - set(['$ERR'])
 
             # Should be just one 
-            assert len(change) == 1
+            if len(change) != 1:
+                # If it is NOT we disqualify it 
+                # (change too complex)
+                # print('Line {} disqualified:'.format(didx))
+                # print('  A | {}'.format(line1))
+                # print('  B | {}'.format(line2))
+                # print('  C | {}'.format(change))
+                continue
+
             change = next(iter(change))
 
             # Get the tokens leading up to the end of 
@@ -29,9 +46,9 @@ with open('/app/good.traces.txt', 'r') as file1:
             ][1:] # Skip func name
             
             # Add this to our list
-            results.append((change, ' '.join(badtrace)))
+            results.append((target, change, ' '.join(badtrace)))
 
 # Print out distinct pairs
 for r in set(results):
-    print('{} | {}'.format(*r))
+    print('{} | {} | {}'.format(*r))
     
