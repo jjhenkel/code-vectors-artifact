@@ -24,9 +24,39 @@ Check out [c2ocaml](https://github.com/jjhenkel/c2ocaml) on GitHub!
 
 Check out [lsee](https://github.com/jjhenkel/lsee) on GitHub!
 
-## Explore our ready-to-use docker images 
+## Explore our ready-to-use docker images
 
 Check them out at [hub.docker.com](https://hub.docker.com/r/jjhenkel/)!
+
+---
+
+## What you should expect to see running these artifacts
+
+### For our rq1/rq2/rq3 artifacts
+
+For these artifacts you should be able to match the output to either our included
+example outputs (see [here](reproduce/rq1/example-output.md), [here](reproduce/rq2/example-output.md), and [here](reproduce/rq3/example-output.md)) or directly to the (updated) tables/charts
+in [our paper](#todo).
+
+**Note:** tables and charts were recently updated to include a fix for a bug
+found and patched during the creation of our artifact.
+
+### For the rq4 artifact
+
+For this artifact we have generated a more comprehensive benchmark compared to 
+the one we used in our initial submission. 
+
+### For the end-to-end demo
+
+If you choose to run the end-to-end demo, you should see quite a bit of console
+output as transformed sources are generated and as traces are created. Finally, you
+should be able to see some results from an example python script written to query
+vectors learned from the open source project redis.
+
+### For the artifact containing our raw dataset
+
+For this artifact you should simply see an output directory with our raw traces
+and vectors.
 
 ---
 

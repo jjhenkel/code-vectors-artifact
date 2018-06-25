@@ -1,4 +1,4 @@
-We are applying for the 'Available' badge. 
+We are applying for the 'Available' badge.
 
 We have documented our artifacts in a consistent and complete manner. These artifacts use standard software (Docker / Unix Makefiles / bash scripts) to facilitate easy installation of our various tools and datasets.
 
