@@ -36,7 +36,7 @@ Check them out at [hub.docker.com](https://hub.docker.com/r/jjhenkel/)!
 
 For these artifacts you should be able to match the output to either our included
 example outputs (see [here](reproduce/rq1/example-output.md), [here](reproduce/rq2/example-output.md), and [here](reproduce/rq3/example-output.md)) or directly to the (updated) tables/charts
-in [our paper](#todo).
+in [our paper](paper.pdf).
 
 **Note:** tables and charts were recently updated to include a fix for a bug
 found and patched during the creation of our artifact.
