@@ -1,6 +1,6 @@
 # Artifact Repository for "Code Vectors" ESEC/FSE'18 Paper
 
-## Important Info
+[![DOI](https://zenodo.org/badge/122389109.svg)](https://zenodo.org/badge/latestdoi/122389109)
 
 The contact author for this artifact is Jordan Henkel <jjhenkel@cs.wisc.edu>.
 
