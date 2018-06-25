@@ -43,8 +43,9 @@ found and patched during the creation of our artifact.
 
 ### For the rq4 artifact
 
-For this artifact we have generated a more comprehensive benchmark compared to 
-the one we used in our initial submission. 
+For this artifact we have generated a more comprehensive benchmark compared to
+the one we used in our initial submission. You can refer to the [example-output.md](reproduce/rq4/example-output.md) file
+for expected output.
 
 ### For the end-to-end demo
 

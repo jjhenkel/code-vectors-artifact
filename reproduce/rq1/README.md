@@ -1,8 +1,8 @@
 # Code Analogies Benchmark / RQ1 Reproduction
 
-This directory contains our code analogies benchmark: a set of over 19,000 code analogies 
-extracted from the Linux kernel. This benchmark contains twenty different categories; 
-within each category any two pairs of functions can be made into an analogy. 
+This directory contains our code analogies benchmark: a set of over 19,000 code analogies
+extracted from the Linux kernel. This benchmark contains twenty different categories;
+within each category any two pairs of functions can be made into an analogy.
 
 For example, the `Lock / Unlock` category would have function pairs like the following:
 
@@ -18,16 +18,16 @@ To form a ground-truth analogy we can take two pairs and write:
 
 Run the following:
 
-```
+```bash
 docker pull jjhenkel/code-vectors-artifact:rq1
 docker run -it --rm jjhenkel/code-vectors-artifact:rq1
 ```
 
-Results are printed to standard output. 
+Results are printed to standard output.
 
 To clean up afterwords run:
 
-```
+```bash
 docker rmi jjhenkel/code-vectors-artifact:rq1
 ```
 

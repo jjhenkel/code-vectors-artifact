@@ -35,7 +35,7 @@ MAX_SEQUENCE_LENGTH = 100
 MAX_NUMBER_WORDS = 136085
 
 traces = []
-with open('dataset.txt', 'r') as tracesf:
+with open('/app/dataset.txt', 'r') as tracesf:
   traces = list(tracesf.readlines())
 
 traces = [
@@ -49,9 +49,9 @@ texts = [ t[1] for t in traces ]
 for t in traces:
   assert len(t) <= MAX_SEQUENCE_LENGTH
 
-tokenizer = Tokenizer(num_words=MAX_NUMBER_WORDS)
-with open('word-index.pkl', 'rb') as wordf:
-  tokenizer.word_index = pickle.load(wordf)
+tokenizer = None
+with open('/app/conv.1.tokenizer.pkl', 'rb') as wordf:
+  tokenizer = pickle.load(wordf)
 sequences = tokenizer.texts_to_sequences(texts)
 
 word_index = tokenizer.word_index
@@ -59,7 +59,7 @@ print('Found %s unique tokens.' % len(word_index))
 
 data = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
 
-labels = to_categorical(np.asarray(labels), num_classes=121)
+labels = to_categorical(np.asarray(labels), num_classes=L.NUM_LABELS)
 print('Shape of data tensor:', data.shape)
 print('Shape of label tensor:', labels.shape)
 
@@ -73,7 +73,7 @@ x_val = data
 y_val = labels
 
 embeddings_index = {}
-with open('vectors-gensim.txt', 'r') as vecsf:
+with open('/app/vectors-gensim.txt', 'r') as vecsf:
   first = True
   for line in vecsf:
     if first:
@@ -86,7 +86,7 @@ with open('vectors-gensim.txt', 'r') as vecsf:
 
 print('Found %s word vectors.' % len(embeddings_index))
 
-embedding_matrix = np.zeros((22077, EMBEDDING_DIM))
+embedding_matrix = np.zeros((len(word_index) + 1, EMBEDDING_DIM))
 for word, i in word_index.items():
   embedding_vector = embeddings_index.get(word)
   if embedding_vector is not None:
@@ -95,7 +95,7 @@ for word, i in word_index.items():
 
 model = Sequential()
 model.add(Embedding(
-  22077,
+  len(word_index) + 1,
   EMBEDDING_DIM,
   weights=[embedding_matrix],
   input_length=MAX_SEQUENCE_LENGTH,
@@ -108,7 +108,7 @@ model.add(Conv1D(200, 3, activation='relu'))
 model.add(Conv1D(200, 3, activation='relu'))
 model.add(GlobalAveragePooling1D())
 model.add(Dropout(0.5))
-model.add(Dense(121, activation='softmax'))
+model.add(Dense(L.NUM_LABELS, activation='softmax'))
 
 model.compile(loss='categorical_crossentropy',
               optimizer='rmsprop',
@@ -121,7 +121,7 @@ model.compile(
 )
 
 checkpointer = ModelCheckpoint(
-  filepath="model_weights.hdf5", 
+  filepath="/app/conv.1.model_weights.hdf5", 
   verbose=1,
   monitor="val_categorical_accuracy",
   save_best_only=True,
@@ -131,23 +131,33 @@ checkpointer = ModelCheckpoint(
 with tf.Session() as sess:
   sess.run(tf.global_variables_initializer())
   try:
-    model.load_weights("model_weights.hdf5")
+    model.load_weights("/app/conv.1.model_weights.hdf5")
   except IOError as ioe:
     print("no checkpoints available !")
   
-  # TODO - top3 / top1 reports 
-
   answers = model.predict(x_val, batch_size=64)
-  answers = [np.argmax(a, axis=-1) for a in answers]
-  labels = [np.argmax(a, axis=-1) for a in labels] 
-  passed = 0
+
+  get = lambda i: [ l[0] for l in L.LABELS.items() if l[1][0] == i ][0]
+
+  top1 = 0
+  top3 = 0
+  top5 = 0
   total = 0
-  print('Results:')
-  for a,l in zip(answers, labels):
+  for j,answer in enumerate(answers):
+    goal = get(np.argmax(labels[j]))
+    # print('GOAL == {}:'.format(goal))
+    idx = 0
     total += 1
-    if a == l:
-      passed += 1
-      print('  - Passed')
-    else:
-      print('  - Failed')
-  print('Accuracy: {:.2%}'.format(float(passed)/float(total)))
+    for r in sorted([ (get(i), answer[i]) for i in range(0, len(answer)) ], key=lambda x: -x[1])[:5]:
+      idx += 1
+      # print('  {} ({:.2%})'.format(*r))
+      if r[0] == goal and idx <= 1:
+        top1 += 1
+      if r[0] == goal and idx <= 3:
+        top3 += 1
+      if r[0] == goal and idx <= 5:
+        top5 += 1
+
+  print('Accuracy @1: {:.2%}'.format(float(top1)/float(total)))
+  print('Accuracy @3: {:.2%}'.format(float(top3)/float(total)))
+  print('Accuracy @5: {:.2%}'.format(float(top5)/float(total)))

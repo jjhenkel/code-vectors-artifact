@@ -1,4 +1,4 @@
-# Output from test run 
+# Output from test run
 
 Generated using an 8-core Debian 9 desktop with 10GB of RAM.
 
@@ -37,7 +37,7 @@ Generated using an 64-core CentOS 7 workstation with 256GB of RAM.
 
 ### Command
 
-`jjhenkel@twiltie:~/workspace/code-vectors-artifact$ docker run -it --rm jjhenkel/code-vectors-artifact:rq3`
+`[jjhenkel@velveeta] (65)$ docker run -it --rm jjhenkel/code-vectors-artifact:rq3`
 
 ### Results
 

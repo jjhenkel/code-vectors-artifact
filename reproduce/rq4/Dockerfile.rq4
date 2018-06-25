@@ -1,0 +1,11 @@
+FROM gw000/keras:2.1.4-py3
+
+COPY labels.py /app/
+COPY score-model.py /app/
+COPY dataset.txt /app
+COPY conv.1.model_weights.hdf5 /app
+COPY conv.1.tokenizer.pkl /app
+COPY vectors-gensim.txt /app
+
+CMD [ "/app/score-model.py" ]
+ENTRYPOINT [ "python3" ]

@@ -6,7 +6,7 @@ This directory contains our ablation study. WARNING: running this reproduction t
 
 Run the following:
 
-```
+```bash
 docker pull jjhenkel/code-vectors-artifact:rq2
 docker run -it --rm jjhenkel/code-vectors-artifact:rq2
 ```
@@ -15,7 +15,7 @@ Results are printed to standard output.
 
 To clean up afterwords run:
 
-```
+```bash
 docker rmi jjhenkel/code-vectors-artifact:rq2
 ```
 

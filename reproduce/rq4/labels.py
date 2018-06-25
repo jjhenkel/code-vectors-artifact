@@ -121,3 +121,5 @@ LABELS = {
   "$RET_ENOSTR": (119,1),
   "$RET_ENETRESET": (120,1)
 }
+
+NUM_LABELS = 121

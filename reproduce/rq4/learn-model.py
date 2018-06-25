@@ -33,7 +33,7 @@ import pickle
 EMBEDDING_DIM = 300
 MAX_SEQUENCE_LENGTH = 100
 MAX_NUMBER_WORDS = 136085
-VALIDATION_SPLIT = 0.05
+VALIDATION_SPLIT = 0.10
 
 traces = []
 with open('err-traces-shuf.txt', 'r') as tracesf:
@@ -52,21 +52,36 @@ traces = [
 labels = [ L.LABELS[t[1]][0] for t in traces ]
 texts = [ t[0] for t in traces ]
 
+traces2 = []
+with open('dataset.txt', 'r') as tracesf:
+  traces2 = list(tracesf.readlines())
+
+traces2 = [
+  (t.split('|')[1].strip(), t.split('|')[2].strip())
+  for t in traces2
+]
+
+texts2 = [ t[1] for t in traces2 ]
+
+
 for t in traces:
   assert len(t) <= MAX_SEQUENCE_LENGTH
 
 tokenizer = Tokenizer(num_words=MAX_NUMBER_WORDS)
-tokenizer.fit_on_texts(texts)
+tokenizer.fit_on_texts(texts + texts2)
+
+texts = [ t for t in texts if t not in texts2 ]
+
 sequences = tokenizer.texts_to_sequences(texts)
 
 word_index = tokenizer.word_index
-with open('word-index.pkl', 'wb') as pf:
-  pickle.dump(word_index, pf)
+with open('tokenizer.pkl', 'wb') as pf:
+  pickle.dump(tokenizer, pf)
 print('Found %s unique tokens.' % len(word_index))
 
 data = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
 
-labels = to_categorical(np.asarray(labels), num_classes=121)
+labels = to_categorical(np.asarray(labels), num_classes=L.NUM_LABELS)
 print('Shape of data tensor:', data.shape)
 print('Shape of label tensor:', labels.shape)
 
@@ -111,45 +126,39 @@ model.add(Embedding(
   input_length=MAX_SEQUENCE_LENGTH,
   trainable=False
 ))
-model.add(Conv1D(100, 3, activation='relu', input_shape=(100, 300)))
+model.add(Conv1D(100, 3, activation='relu', input_shape=(MAX_SEQUENCE_LENGTH, EMBEDDING_DIM)))
 model.add(Conv1D(100, 3, activation='relu'))
 model.add(MaxPooling1D(3))
-model.add(Conv1D(200, 3, activation='relu'))
-model.add(Conv1D(200, 3, activation='relu'))
+model.add(Conv1D(100, 3, activation='relu'))
+model.add(Conv1D(100, 3, activation='relu'))
 model.add(GlobalAveragePooling1D())
 model.add(Dropout(0.5))
-model.add(Dense(121, activation='softmax'))
+model.add(Dense(L.NUM_LABELS, activation='softmax'))
 
 model.compile(loss='categorical_crossentropy',
-              optimizer='rmsprop',
+              optimizer='adam',
               metrics=['categorical_accuracy'])
 
-model.compile(
-  loss='categorical_crossentropy', 
-  optimizer=Adam(), 
-  metrics=['categorical_accuracy']
-)
-
-checkpointer = ModelCheckpoint(
-  filepath="model_weights.hdf5", 
-  verbose=1,
-  monitor="val_categorical_accuracy",
-  save_best_only=True,
-  mode="max"
-)
+# checkpointer = ModelCheckpoint(
+#   filepath="mlp.model_weights.hdf5", 
+#   verbose=1,
+#   monitor="val_categorical_accuracy",
+#   save_best_only=True,
+#   mode="max"
+# )
 
 with tf.Session() as sess:
   sess.run(tf.global_variables_initializer())
-  try:
-    model.load_weights("model_weights.hdf5")
-  except IOError as ioe:
-    print("no checkpoints available !")
+  # try:
+  #   model.load_weights("mlp.model_weights.hdf5")
+  # except IOError as ioe:
+  #   print("no checkpoints available !")
   
   model.fit(
     x_train, y_train, 
     validation_data=(x_val, y_val),
-    epochs=3, batch_size=64, shuffle=True,
-    callbacks=[checkpointer]
+    epochs=5, batch_size=64, shuffle=True
   )
 
   # score = model.evaluate(x_test, y_test, batch_size=64)
+  model.save('conv-model.h5')

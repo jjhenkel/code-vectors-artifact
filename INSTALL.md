@@ -46,6 +46,15 @@ docker pull jjhenkel/code-vectors-artifact:rq3
 docker run -it --rm jjhenkel/code-vectors-artifact:rq3
 ```
 
+### Reproducing rq4
+
+See [reproduce/rq4/README.md](reproduce/rq4/README.md) or just run the following:
+
+```bash
+docker pull jjhenkel/code-vectors-artifact:rq4
+docker run -it --rm jjhenkel/code-vectors-artifact:rq4
+```
+
 ---
 
 ## Prerequisites (for our end-to-end demo)

@@ -6,7 +6,7 @@ This directory contains our syntactic vs semantic vectors study (RQ3). NOTE: run
 
 Run the following:
 
-```
+```bash
 docker pull jjhenkel/code-vectors-artifact:rq3
 docker run -it --rm jjhenkel/code-vectors-artifact:rq3
 ```
@@ -15,7 +15,7 @@ Results are printed to standard output.
 
 To clean up afterwords run:
 
-```
+```bash
 docker rmi jjhenkel/code-vectors-artifact:rq3
 ```
 
