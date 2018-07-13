@@ -20,7 +20,6 @@ endef
 export BASH_FUNC_realpath%%
 
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-MAKE:=${ROOT_DIR}/tools/make
 
 .PHONY: help
 .PHONY: submodules
@@ -81,11 +80,11 @@ learn-vectors-redis: glove ## Learns GloVe vectors from redis trace corpus and r
 end-to-end-redis: lsee c2ocaml ## Runs the toolchain end-to-end on redi.
 	@echo "[code-vectors] Running end-to-end pipeline on redis..."
 	@echo "[code-vectors] Transforming sources..."
-	pushd ${ROOT_DIR}/c2ocaml ; ${MAKE} redis --output-sync ; popd
+	pushd ${ROOT_DIR}/c2ocaml ; make redis ; popd
 	@echo "[code-vectors] Generating traces..."
-	pushd ${ROOT_DIR}/lsee ; ${MAKE} redis --output-sync ; popd
+	pushd ${ROOT_DIR}/lsee ; make redis ; popd
 	@echo "[code-vectors] Collecting traces..."
-	pushd ${ROOT_DIR}/lsee ; NAME=redis ${MAKE} collect ; popd
+	pushd ${ROOT_DIR}/lsee ; NAME=redis make collect ; popd
 	@echo "[code-vectors] Completed end-to-end run on redis!"
 	@echo "[code-vectors] Run make learn-vectors-redis to learn vectors using GloVe!"
 
@@ -104,9 +103,9 @@ end-to-end-curl: lsee c2ocaml ## Runs the toolchain end-to-end on curl <HIDE FRO
 rq4-generate-data: lsee c2ocaml ## Generates data to run RQ4 <HIDE FROM HELP>.
 	@echo "[code-vectors] Generating data for RQ4..."
 	@echo "[code-vectors] Transforming sources..."
-	pushd ${ROOT_DIR}/c2ocaml ; ${MAKE} rq4 --output-sync ; popd
+	pushd ${ROOT_DIR}/c2ocaml ; make rq4 ; popd
 	@echo "[code-vectors] Generating traces..."
-	pushd ${ROOT_DIR}/lsee ; ${MAKE} rq4 --output-sync ; popd
+	pushd ${ROOT_DIR}/lsee ; make rq4 ; popd
 	mv ${ROOT_DIR}/lsee/rq4-good.traces.txt ${ROOT_DIR}/reproduce/rq4/good.traces.txt
 	mv ${ROOT_DIR}/lsee/rq4-bad.traces.txt ${ROOT_DIR}/reproduce/rq4/bad.traces.txt
 	@echo "[code-vectors] Generating dataset..."
