@@ -1,3 +1,9 @@
+from numpy.random import seed
+
+import sys
+
+seed(1)
+
 import numpy as np
 import labels as L
 
@@ -15,17 +21,27 @@ from keras.engine import Layer, InputSpec, InputLayer
 from keras.models import Model, Sequential
 
 from keras.layers import Dropout, Embedding, concatenate
-from keras.layers import Conv1D, MaxPooling1D, GlobalAveragePooling1D, Conv2D, MaxPool2D, ZeroPadding1D
+from keras.layers import Conv1D, MaxPooling1D, GlobalMaxPooling1D, GlobalAveragePooling1D, Conv2D, MaxPool2D, ZeroPadding1D
 from keras.layers import Dense, Input, Flatten, BatchNormalization
 from keras.layers import Concatenate, Dot, Merge, Multiply, RepeatVector
 from keras.layers import Bidirectional, TimeDistributed
 from keras.layers import SimpleRNN, LSTM, GRU, Lambda, Permute
+from keras.layers import merge
 
 from keras.layers.core import Reshape, Activation
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint,EarlyStopping,TensorBoard
 from keras.constraints import maxnorm
 from keras.regularizers import l2
+from keras.metrics import top_k_categorical_accuracy
+
+from keras.optimizers import SGD
+
+import keras.metrics
+
+def top_3_accuracy(y_true, y_pred):
+  return top_k_categorical_accuracy(y_true, y_pred, k=3)
+keras.metrics.top_3_accuracy = top_3_accuracy
 
 import pickle
 
@@ -37,7 +53,7 @@ VALIDATION_SPLIT = 0.10
 
 traces = []
 with open('err-traces-shuf.txt', 'r') as tracesf:
-  traces = list(tracesf.readlines())
+  traces = list(tracesf.readlines())[:40000]
 
 traces = [
   ' '.join([x.strip() for x in t.strip().split(' ')[::-1][-MAX_SEQUENCE_LENGTH:]])
@@ -49,34 +65,19 @@ traces = [
   for t in traces
 ]
 
-labels = [ L.LABELS[t[1]][0] for t in traces ]
-texts = [ t[0] for t in traces ]
-
-traces2 = []
-with open('dataset.txt', 'r') as tracesf:
-  traces2 = list(tracesf.readlines())
-
-traces2 = [
-  (t.split('|')[1].strip(), t.split('|')[2].strip())
-  for t in traces2
-]
-
-texts2 = [ t[1] for t in traces2 ]
-
+labels = [ L.LABELS[l][0] for (_, l) in traces ]
+texts = [ t for (t, _) in traces ]
 
 for t in traces:
   assert len(t) <= MAX_SEQUENCE_LENGTH
 
-tokenizer = Tokenizer(num_words=MAX_NUMBER_WORDS)
-tokenizer.fit_on_texts(texts + texts2)
-
-texts = [ t for t in texts if t not in texts2 ]
-
+tokenizer = None
+with open('/app/assets/tokenizer.pkl', 'rb') as wordf:
+  tokenizer = pickle.load(wordf)
 sequences = tokenizer.texts_to_sequences(texts)
 
 word_index = tokenizer.word_index
-with open('tokenizer.pkl', 'wb') as pf:
-  pickle.dump(tokenizer, pf)
+
 print('Found %s unique tokens.' % len(word_index))
 
 data = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
@@ -92,10 +93,41 @@ data = data[indices]
 labels = labels[indices]
 nb_validation_samples = int(VALIDATION_SPLIT * data.shape[0])
 
-x_train = data[:-nb_validation_samples]
-y_train = labels[:-nb_validation_samples]
-x_val = data[-nb_validation_samples:]
-y_val = labels[-nb_validation_samples:]
+x_train = data
+y_train = labels
+
+traces = []
+with open('/app/dataset.txt', 'r') as tracesf:
+  traces = list(tracesf.readlines())
+
+traces = [
+  (t.split('|')[1].strip(), t.split('|')[2].strip())
+  for t in traces
+]
+
+labels = [ L.LABELS[t[0]][0] for t in traces ]
+texts = [ t[1] for t in traces ]
+
+for t in traces:
+  assert len(t) <= MAX_SEQUENCE_LENGTH
+
+sequences = tokenizer.texts_to_sequences(texts)
+
+data = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
+
+labels = to_categorical(np.asarray(labels), num_classes=L.NUM_LABELS)
+print('Shape of data tensor:', data.shape)
+print('Shape of label tensor:', labels.shape)
+
+# split the data into a training set and a validation set
+indices = np.arange(data.shape[0])
+np.random.shuffle(indices)
+data = data[indices]
+labels = labels[indices]
+
+x_val = data
+y_val = labels
+
 
 embeddings_index = {}
 with open('vectors-gensim.txt', 'r') as vecsf:
@@ -124,41 +156,29 @@ model.add(Embedding(
   EMBEDDING_DIM,
   weights=[embedding_matrix],
   input_length=MAX_SEQUENCE_LENGTH,
-  trainable=False
+  trainable=(True if sys.argv[1] == 'T' else False)
 ))
-model.add(Conv1D(100, 3, activation='relu', input_shape=(MAX_SEQUENCE_LENGTH, EMBEDDING_DIM)))
-model.add(Conv1D(100, 3, activation='relu'))
-model.add(MaxPooling1D(3))
-model.add(Conv1D(100, 3, activation='relu'))
-model.add(Conv1D(100, 3, activation='relu'))
-model.add(GlobalAveragePooling1D())
-model.add(Dropout(0.5))
-model.add(Dense(L.NUM_LABELS, activation='softmax'))
+model.add(LSTM(25, return_sequences=True, dropout=0.25, recurrent_dropout=0.1))
+model.add(GlobalMaxPooling1D())
+model.add(Dense(10, activation="relu"))
+model.add(Dropout(0.25))
+model.add(Dense(units=L.NUM_LABELS, activation='softmax'))
 
 model.compile(loss='categorical_crossentropy',
-              optimizer='adam',
-              metrics=['categorical_accuracy'])
+              metrics=['top_3_accuracy'], optimizer='adam')
 
-# checkpointer = ModelCheckpoint(
-#   filepath="mlp.model_weights.hdf5", 
-#   verbose=1,
-#   monitor="val_categorical_accuracy",
-#   save_best_only=True,
-#   mode="max"
-# )
+model.fit(
+  x_train, y_train, 
+  validation_data=(x_val, y_val),
+  epochs=10, batch_size=32, shuffle=True,
+  callbacks=[
+    keras.callbacks.ModelCheckpoint(
+      'checkpoint.{epoch:02d}-{val_top_3_accuracy:.2f}.h5', 
+      monitor='val_top_3_accuracy', 
+      verbose=0, 
+      save_best_only=True
+    )
+  ]
+)
 
-with tf.Session() as sess:
-  sess.run(tf.global_variables_initializer())
-  # try:
-  #   model.load_weights("mlp.model_weights.hdf5")
-  # except IOError as ioe:
-  #   print("no checkpoints available !")
-  
-  model.fit(
-    x_train, y_train, 
-    validation_data=(x_val, y_val),
-    epochs=5, batch_size=64, shuffle=True
-  )
-
-  # score = model.evaluate(x_test, y_test, batch_size=64)
-  model.save('conv-model.h5')
+model.save('{}-temp.model.h5'.format(sys.argv[2]))

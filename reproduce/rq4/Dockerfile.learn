@@ -4,4 +4,5 @@ COPY *.py /app/
 COPY err-traces-shuf.txt /app
 COPY vectors-gensim.txt /app
 
-ENTRYPOINT [ "python" ]
+CMD [ "T", "docker" ]
+ENTRYPOINT [ "python3" ]

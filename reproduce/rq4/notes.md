@@ -1,6 +1,8 @@
+# Notes
 
+## Purpose
 
-
+Just some commands to cut/paste for working on data collection.
 
 ### Get function AFTER CHANGE from linux
 ```bash

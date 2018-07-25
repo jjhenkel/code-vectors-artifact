@@ -21,8 +21,8 @@ with open('/app/good.traces.txt', 'r') as file1:
             target = toks1[0]
 
             # Get the set of changed tokens
-            change = set(toks1) - set(toks2) - set(['$ERR'])
-
+            change = set(toks1) - set(toks2)
+            
             # Should be just one 
             if len(change) != 1:
                 # If it is NOT we disqualify it 
@@ -46,9 +46,9 @@ with open('/app/good.traces.txt', 'r') as file1:
             ][1:] # Skip func name
             
             # Add this to our list
-            results.append((target, change, ' '.join(badtrace)))
+            results.append((target, change, ' '.join(badtrace), toks2[-2]))
 
 # Print out distinct pairs
 for r in set(results):
-    print('{} | {} | {}'.format(*r))
+    print('{} | {} | {} | {}'.format(*r))
     
