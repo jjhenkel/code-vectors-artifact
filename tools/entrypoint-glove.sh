@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+cd /app
+make
+
 # Adapted from GloVe's demo.sh
 
 mkdir -p /output

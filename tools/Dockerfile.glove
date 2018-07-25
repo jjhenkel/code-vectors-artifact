@@ -8,6 +8,4 @@ COPY ./tools/redis-demo.py /app/redis-demo.py
 
 WORKDIR /app 
 
-RUN make 
-
 ENTRYPOINT [ "/app/entrypoint.sh" ]
