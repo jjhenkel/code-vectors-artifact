@@ -77,7 +77,7 @@ learn-vectors-redis: glove ## Learns GloVe vectors from redis trace corpus and r
 		/app/redis-demo.py
 	@echo "[code-vectors] Demo complete."
 
-end-to-end-redis: lsee c2ocaml ## Runs the toolchain end-to-end on redi.
+end-to-end-redis: lsee c2ocaml ## Runs the toolchain end-to-end on redis.
 	@echo "[code-vectors] Running end-to-end pipeline on redis..."
 	@echo "[code-vectors] Transforming sources..."
 	pushd ${ROOT_DIR}/c2ocaml ; make redis ; popd
@@ -87,6 +87,26 @@ end-to-end-redis: lsee c2ocaml ## Runs the toolchain end-to-end on redi.
 	pushd ${ROOT_DIR}/lsee ; NAME=redis make collect ; popd
 	@echo "[code-vectors] Completed end-to-end run on redis!"
 	@echo "[code-vectors] Run make learn-vectors-redis to learn vectors using GloVe!"
+
+end-to-end-linux: lsee c2ocaml ## Runs the toolchain end-to-end on linux.
+	@echo "[code-vectors] Running end-to-end pipeline on redis..."
+	@echo "[code-vectors] Transforming sources..."
+	pushd ${ROOT_DIR}/c2ocaml ; make linux ; popd
+	@echo "[code-vectors] Generating traces..."
+	pushd ${ROOT_DIR}/lsee ; make linux ; popd
+	@echo "[code-vectors] Collecting traces..."
+	pushd ${ROOT_DIR}/lsee ; NAME=linux make collect ; popd
+	@echo "[code-vectors] Completed end-to-end run on linux!"
+	@echo "[code-vectors] Run make learn-vectors-linux to learn vectors using GloVe!"
+
+learn-vectors-linux: glove ## Learns GloVe vectors from linux trace corpus and runs demo (using Gensim).
+	@echo "[code-vectors] Learning vectors for traces generated from linux..."
+	docker run -it --rm \
+	  -v ${ROOT_DIR}/lsee:/traces \
+		-v ${ROOT_DIR}/artifacts/linux:/output \
+		jjhenkel/glove \
+		/traces/linux.traces.txt 10 15 300 100
+	@echo "[code-vectors] Learner finished. Output saved in ${ROOT_DIR}/artifacts/linux"
 
 end-to-end-nginx: lsee c2ocaml  ## Runs the toolchain end-to-end on nginx <HIDE FROM HELP>.
 	@echo "[code-vectors] Running end-to-end pipeline on nginx..."
