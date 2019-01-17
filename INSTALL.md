@@ -81,7 +81,7 @@ NOTE: can take up to `3 hours` and `4 GB` of space. (Runtime on a 4-core desktop
 If you were able to run the first three commands (listed above) you have done the following:
 
 1. Used our `spec2image` tool to create a docker image (locally) containing the `redis` program's source files and steps to build that program from those source files.
-2. Built that program (in a container) with our custom version of GCC 7.2.0 running our `c2ocaml` plugin.
+2. Built that program (in a container) with our custom version of GCC 7.3.0 running our `c2ocaml` plugin.
 3. Created an OCaml file for each procedure GCC/G++ encountered while building the `redis` application from source.
 4. Grouped and merged these transformed OCaml files into larger chunks.
 5. Ran (in parallel) our `lsee` tool on these merged OCaml files to produce abstracted symbolic traces.
