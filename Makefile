@@ -61,19 +61,23 @@ glove: ## Ensures that the GloVe tool is pulled from docker hub.
 	@echo "[code-vectors] Ensuring we have GloVe"
 	docker pull jjhenkel/glove
 
-learn-vectors-redis: glove ## Learns GloVe vectors from redis trace corpus and runs demo (using Gensim).
+glovegz: ## Ensures that the GloVe (gz version) tool is pulled from docker hub.
+	@echo "[code-vectors] Ensuring we have GloVe"
+	docker pull jjhenkel/glove:gz
+
+learn-vectors-redis: glovegz ## Learns GloVe vectors from redis trace corpus and runs demo (using Gensim).
 	@echo "[code-vectors] Learning vectors for traces generated from redis..."
 	docker run -it --rm \
 	  -v ${ROOT_DIR}/lsee:/traces \
 		-v ${ROOT_DIR}/artifacts/redis:/output \
-		jjhenkel/glove \
-		/traces/redis.traces.txt 10 15 300 50
+		jjhenkel/glove:gz \
+		/traces/redis.traces.gz 10 15 300 50
 	@echo "[code-vectors] Learner finished. Output saved in ${ROOT_DIR}/artifacts/redis"
 	@echo "[code-vectors] Running demo using Gensim and our freshly learned vectors..."
 	docker run -it --rm \
 		-v ${ROOT_DIR}/artifacts:/artifacts \
 		--entrypoint python \
-		jjhenkel/glove \
+		jjhenkel/glove:gz \
 		/app/redis-demo.py
 	@echo "[code-vectors] Demo complete."
 
@@ -99,13 +103,13 @@ end-to-end-linux: lsee c2ocaml ## Runs the toolchain end-to-end on linux.
 	@echo "[code-vectors] Completed end-to-end run on linux!"
 	@echo "[code-vectors] Run make learn-vectors-linux to learn vectors using GloVe!"
 
-learn-vectors-linux: glove ## Learns GloVe vectors from linux trace corpus and runs demo (using Gensim).
+learn-vectors-linux: glovegz ## Learns GloVe vectors from linux trace corpus and runs demo (using Gensim).
 	@echo "[code-vectors] Learning vectors for traces generated from linux..."
 	docker run -it --rm \
 	  -v ${ROOT_DIR}/lsee:/traces \
 		-v ${ROOT_DIR}/artifacts/linux:/output \
-		jjhenkel/glove \
-		/traces/linux.traces.txt 10 15 300 100
+		jjhenkel/glove:gz \
+		/traces/linux.traces.gz 10 15 300 100
 	@echo "[code-vectors] Learner finished. Output saved in ${ROOT_DIR}/artifacts/linux"
 
 end-to-end-nginx: lsee c2ocaml  ## Runs the toolchain end-to-end on nginx <HIDE FROM HELP>.

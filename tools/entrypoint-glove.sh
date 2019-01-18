@@ -24,7 +24,7 @@ MAX_ITER=$5
 NUM_THREADS=$(getconf _NPROCESSORS_ONLN)
 
 # Constant params
-MEMORY=4.0
+MEMORY=256.0
 VERBOSE=2
 BINARY=0
 X_MAX=10
@@ -42,19 +42,17 @@ echo "[GloVe]          file format: $BINARY"
 echo "[GloVe]                X max: $X_MAX"
 
 echo "[GloVe] Building vocabulary..."
-$BUILDDIR/vocab_count \
+gzip -cd $CORPUS | $BUILDDIR/vocab_count \
   -min-count $VOCAB_MIN_COUNT \
   -verbose $VERBOSE \
-  < $CORPUS \
   > $VOCAB_FILE
 
 echo "[GloVe] Building cooccurence matrix..."
-$BUILDDIR/cooccur \
+gzip -cd $CORPUS | $BUILDDIR/cooccur \
   -memory $MEMORY \
   -vocab-file $VOCAB_FILE \
   -verbose $VERBOSE \
   -window-size $WINDOW_SIZE \
-  < $CORPUS \
   > $COOCCURRENCE_FILE
 
 echo "[GloVe] Shuffling cooccurence matrix..."
