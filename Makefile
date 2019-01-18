@@ -109,7 +109,7 @@ learn-vectors-linux: glovegz ## Learns GloVe vectors from linux trace corpus and
 	  -v ${ROOT_DIR}/lsee:/traces \
 		-v ${ROOT_DIR}/artifacts/linux:/output \
 		jjhenkel/glove:gz \
-		/traces/linux.traces.gz 10 15 300 100
+		/traces/linux.traces.gz 100 5 300 500
 	@echo "[code-vectors] Learner finished. Output saved in ${ROOT_DIR}/artifacts/linux"
 
 end-to-end-nginx: lsee c2ocaml  ## Runs the toolchain end-to-end on nginx <HIDE FROM HELP>.
