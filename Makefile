@@ -103,6 +103,23 @@ end-to-end-linux: lsee c2ocaml ## Runs the toolchain end-to-end on linux.
 	@echo "[code-vectors] Completed end-to-end run on linux!"
 	@echo "[code-vectors] Run make learn-vectors-linux to learn vectors using GloVe!"
 
+end-to-end-linux-no-df: lsee c2ocaml ## Runs the toolchain end-to-end on linux (no-df).
+	@echo "[code-vectors] Running end-to-end pipeline on redis..."
+	@echo "[code-vectors] Transforming sources..."
+	pushd ${ROOT_DIR}/c2ocaml ; make linux ; popd
+	@echo "[code-vectors] Generating traces..."
+	pushd ${ROOT_DIR}/lsee ; make linux-no-df ; popd
+	@echo "[code-vectors] Collecting traces..."
+	pushd ${ROOT_DIR}/lsee ; NAME=linux-no-df make collect ; popd
+	@echo "[code-vectors] Completed end-to-end run on linux!"
+	@echo "[code-vectors] Learning vectors for traces generated from linux-no-df..."
+	docker run -it --rm \
+	  -v ${ROOT_DIR}/lsee:/traces \
+		-v ${ROOT_DIR}/artifacts/linux-no-df:/output \
+		jjhenkel/glove:gz \
+		/traces/linux-no-df.traces.gz 0 5 300 1000
+	@echo "[code-vectors] Learner finished. Output saved in ${ROOT_DIR}/artifacts/linux-no-df"
+
 learn-vectors-linux: glovegz ## Learns GloVe vectors from linux trace corpus and runs demo (using Gensim).
 	@echo "[code-vectors] Learning vectors for traces generated from linux..."
 	docker run -it --rm \
@@ -136,3 +153,8 @@ rq4-generate-data: lsee c2ocaml ## Generates data to run RQ4 <HIDE FROM HELP>.
 	docker build -t jjhenkel/code-vectors-artifact:rq4-gen -f ${ROOT_DIR}/reproduce/rq4/Dockerfile ${ROOT_DIR}/reproduce/rq4 
 	docker run -it --rm jjhenkel/code-vectors-artifact:rq4-gen &> ${ROOT_DIR}/reproduce/rq4/dataset.txt
 	@echo "[code-vectors] Finished!"
+
+cleanup: ## Cleans up artifacts.
+	find ./c2ocaml/artifacts/ -type f -name "*.ml" | xargs rm -f
+	find ./lsee/artifacts/ -type f | xargs rm -f
+	rm -f ./lsee/*.traces.gz
