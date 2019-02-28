@@ -63,7 +63,7 @@ glove: ## Ensures that the GloVe tool is pulled from docker hub.
 
 glovegz: ## Ensures that the GloVe (gz version) tool is pulled from docker hub.
 	@echo "[code-vectors] Ensuring we have GloVe"
-	docker pull jjhenkel/glove:gz
+	docker build -t jjhenkel/glove:gz -f ./tools/Dockerfile.glove .
 
 learn-vectors-redis: glovegz ## Learns GloVe vectors from redis trace corpus and runs demo (using Gensim).
 	@echo "[code-vectors] Learning vectors for traces generated from redis..."
