@@ -120,6 +120,74 @@ end-to-end-linux-no-df: lsee c2ocaml ## Runs the toolchain end-to-end on linux (
 		/traces/linux-no-df.traces.gz 0 5 300 1000
 	@echo "[code-vectors] Learner finished. Output saved in ${ROOT_DIR}/artifacts/linux-no-df"
 
+end-to-end-curl-no-df: lsee c2ocaml ## Runs the toolchain end-to-end on curl (no-df).
+	@echo "[code-vectors] Running end-to-end pipeline on redis..."
+	@echo "[code-vectors] Transforming sources..."
+	pushd ${ROOT_DIR}/c2ocaml ; make curl ; popd
+	@echo "[code-vectors] Generating traces..."
+	pushd ${ROOT_DIR}/lsee ; make curl-no-df ; popd
+	@echo "[code-vectors] Collecting traces..."
+	pushd ${ROOT_DIR}/lsee ; NAME=curl-no-df make collect ; popd
+	@echo "[code-vectors] Completed end-to-end run on curl!"
+	@echo "[code-vectors] Learning vectors for traces generated from curl-no-df..."
+	docker run -it --rm \
+	  -v ${ROOT_DIR}/lsee:/traces \
+		-v ${ROOT_DIR}/artifacts/curl-no-df:/output \
+		jjhenkel/glove:gz \
+		/traces/curl-no-df.traces.gz 0 5 300 500
+	@echo "[code-vectors] Learner finished. Output saved in ${ROOT_DIR}/artifacts/curl-no-df"
+
+end-to-end-nginx-no-df: lsee c2ocaml ## Runs the toolchain end-to-end on nginx (no-df).
+	@echo "[code-vectors] Running end-to-end pipeline on nginx..."
+	@echo "[code-vectors] Transforming sources..."
+	pushd ${ROOT_DIR}/c2ocaml ; make nginx ; popd
+	@echo "[code-vectors] Generating traces..."
+	pushd ${ROOT_DIR}/lsee ; make nginx-no-df ; popd
+	@echo "[code-vectors] Collecting traces..."
+	pushd ${ROOT_DIR}/lsee ; NAME=nginx-no-df make collect ; popd
+	@echo "[code-vectors] Completed end-to-end run on nginx!"
+	@echo "[code-vectors] Learning vectors for traces generated from nginx-no-df..."
+	docker run -it --rm \
+	  -v ${ROOT_DIR}/lsee:/traces \
+		-v ${ROOT_DIR}/artifacts/nginx-no-df:/output \
+		jjhenkel/glove:gz \
+		/traces/nginx-no-df.traces.gz 0 5 300 500
+	@echo "[code-vectors] Learner finished. Output saved in ${ROOT_DIR}/artifacts/nginx-no-df"
+
+end-to-end-nmap-no-df: lsee c2ocaml ## Runs the toolchain end-to-end on nmap (no-df).
+	@echo "[code-vectors] Running end-to-end pipeline on nmap..."
+	@echo "[code-vectors] Transforming sources..."
+	pushd ${ROOT_DIR}/c2ocaml ; make nmap ; popd
+	@echo "[code-vectors] Generating traces..."
+	pushd ${ROOT_DIR}/lsee ; make nmap-no-df ; popd
+	@echo "[code-vectors] Collecting traces..."
+	pushd ${ROOT_DIR}/lsee ; NAME=nmap-no-df make collect ; popd
+	@echo "[code-vectors] Completed end-to-end run on nmap!"
+	@echo "[code-vectors] Learning vectors for traces generated from nmap-no-df..."
+	docker run -it --rm \
+	  -v ${ROOT_DIR}/lsee:/traces \
+		-v ${ROOT_DIR}/artifacts/nmap-no-df:/output \
+		jjhenkel/glove:gz \
+		/traces/nmap-no-df.traces.gz 0 5 300 500
+	@echo "[code-vectors] Learner finished. Output saved in ${ROOT_DIR}/artifacts/nmap-no-df"
+
+end-to-end-hexchat-no-df: lsee c2ocaml ## Runs the toolchain end-to-end on hexchat (no-df).
+	@echo "[code-vectors] Running end-to-end pipeline on hexchat..."
+	@echo "[code-vectors] Transforming sources..."
+	pushd ${ROOT_DIR}/c2ocaml ; make hexchat ; popd
+	@echo "[code-vectors] Generating traces..."
+	pushd ${ROOT_DIR}/lsee ; make hexchat-no-df ; popd
+	@echo "[code-vectors] Collecting traces..."
+	pushd ${ROOT_DIR}/lsee ; NAME=hexchat-no-df make collect ; popd
+	@echo "[code-vectors] Completed end-to-end run on hexchat!"
+	@echo "[code-vectors] Learning vectors for traces generated from hexchat-no-df..."
+	docker run -it --rm \
+	  -v ${ROOT_DIR}/lsee:/traces \
+		-v ${ROOT_DIR}/artifacts/hexchat-no-df:/output \
+		jjhenkel/glove:gz \
+		/traces/hexchat-no-df.traces.gz 0 5 300 500
+	@echo "[code-vectors] Learner finished. Output saved in ${ROOT_DIR}/artifacts/hexchat-no-df"
+
 learn-vectors-linux: glovegz ## Learns GloVe vectors from linux trace corpus and runs demo (using Gensim).
 	@echo "[code-vectors] Learning vectors for traces generated from linux..."
 	docker run -it --rm \
