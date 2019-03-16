@@ -143,7 +143,14 @@ usnic_fwd_dev_alloc usnic_fwd_dev_alloc_$EQ_0|usnic_fwd_dev_alloc_$NEQ_0
 kmalloc_$p1_$LT_4294967295 kmalloc
 ```
 
-From JUXTA:
+NOTES:
+drm_dp_put_port (renamed and can't figure out if property still holds)
+t4_alloc_mem (no references in current commit)
+kthread_create macro for call to kthread_create_on_node
+not sure about kthread_run check? Expands internally to kthread_create -> kthread_create_on_node
+drm_alloc_coherent (no reference in current commit)
+
+### From JUXTA:
 
 An issue here: do these hold outside of the limited scope of different
 filesystem implementations? 

@@ -37,5 +37,55 @@ Sometimes prefixed with: `clusterLookupNode clusterLookupNode_$EQ_0`.
 createClusterNode
 createClusterNode_$PARAMTO_clusterAddNode
 clusterAddNode
+```
 
+## `listTypeInitIterator`
+
+```
+listTypeInitIterator
+listTypeNext
+listTypeNext_$EQ_0
+listTypeNext_$NEQ_0
+listTypeGet
+listTypeReleaseIterator
+```
+
+## `dictGetIterator`
+
+```
+dictGetIterator
+dictNext
+dictNext_$EQ_0
+dictNext_$NEQ_0
+dictGetKey
+dictReleaseIterator
+```
+
+## `listCreate`
+
+```
+listCreate
+listSetFreeMethod
+listAddNodeTail
+listRelease
+```
+
+## `setTypeInitIterator`
+
+```
+setTypeInitIterator
+setTypeNextObject
+setTypeNextObject_$EQ_0
+setTypeNextObject_$NEQ_0
+setTypeReleaseIterator
+```
+
+## `hashTypeInitIterator`
+
+```
+hashTypeInitIterator
+hashTypeNext
+hashTypeNext_$EQ_-1
+hashTypeNext_$NEQ_-1
+hashTypeReleaseIterator
 ```

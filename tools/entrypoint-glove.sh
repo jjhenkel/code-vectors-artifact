@@ -27,7 +27,7 @@ NUM_THREADS=$(getconf _NPROCESSORS_ONLN)
 MEMORY=256.0
 VERBOSE=2
 BINARY=0
-X_MAX=10
+X_MAX=0
 
 echo "[GloVe] Learning vectors with the following parameters:"
 echo "[GloVe]               corpus: $CORPUS"

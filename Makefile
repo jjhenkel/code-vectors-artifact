@@ -65,13 +65,14 @@ glovegz: ## Ensures that the GloVe (gz version) tool is pulled from docker hub.
 	@echo "[code-vectors] Ensuring we have GloVe"
 	docker pull jjhenkel/glove:gz
 
-learn-vectors-redis: glovegz ## Learns GloVe vectors from redis trace corpus and runs demo (using Gensim).
+learn-vectors-redis: ## Learns GloVe vectors from redis trace corpus and runs demo (using Gensim).
 	@echo "[code-vectors] Learning vectors for traces generated from redis..."
+	docker build -t jjhenkel/glove:gz -f "${ROOT_DIR}/tools/Dockerfile.glove" "${ROOT_DIR}"
 	docker run -it --rm \
 	  -v ${ROOT_DIR}/lsee:/traces \
 		-v ${ROOT_DIR}/artifacts/redis:/output \
 		jjhenkel/glove:gz \
-		/traces/redis.traces.gz 10 15 300 50
+		/traces/redis.traces.gz 0 5 50 500
 	@echo "[code-vectors] Learner finished. Output saved in ${ROOT_DIR}/artifacts/redis"
 	@echo "[code-vectors] Running demo using Gensim and our freshly learned vectors..."
 	docker run -it --rm \

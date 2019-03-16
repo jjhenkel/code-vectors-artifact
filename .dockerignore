@@ -3,5 +3,7 @@ c2ocaml/
 dataset/
 lsee/
 reproduce/
+experiments/
+notes/
 *.md
 Makefile
