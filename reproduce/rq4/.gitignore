@@ -1,6 +1,5 @@
 bad.traces.txt
 good.traces.txt
-dataset.txt
 err-traces-shuf.txt
 vectors-gensim.txt
 __pycache__/
